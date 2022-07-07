@@ -5,7 +5,7 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  print_name:
+  save_hello_world_output:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -15,15 +15,37 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Print Name using Env Variable"
+          name: "write to output file"
           command: |
-            echo $NAME 
+            echo "Hello World" > output.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - "output.txt"
+
+  print_output_file:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    docker:
+      - image: cimg/node:18.4.0
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run:
+          name: "print the content of output.txt"
+          command: |
+            cat output.txt
+      - attach_workspace:
+            at: /tmp/workspace
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  # Name the workflow "test-env-var"
-  test-env-var:
-    # Run the welcome/run job in its own container
+  test-file-sharing:
     jobs:
-      - print_name
+      - save_hello_world_output
+      - print_output_file:
+          requires:
+            - save_hello_world_output
+
