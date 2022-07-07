@@ -17,11 +17,12 @@ jobs:
       - run:
           name: "write to output file"
           command: |
-            echo "Hello World" > output.txt
+            mkdir -p /tmp/workspace
+            echo "Hello World" > /tmp/workspace/output.txt
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
-            - "output.txt"
+            - output.txt
 
   print_output_file:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
@@ -35,7 +36,7 @@ jobs:
       - run:
           name: "print the content of output.txt"
           command: |
-            cat output.txt
+            cat /tmp/workspace/output.txt
       - attach_workspace:
             at: /tmp/workspace
 
