@@ -26,6 +26,5 @@ jobs:
 workflows:
   # Name the workflow "test-reusable-command"
   test-reusable-command:
-    # Run the welcome/run job in its own container
     jobs:
       - print_id
