@@ -2,18 +2,10 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-commands: # a reusable command with parameters
-  print_pipeline_id:
-    parameters:
-      id:
-        type: string
-    steps:
-      - run: echo << parameters.id >>
-
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  print_id:
+  print_output:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -22,13 +14,18 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - print_pipeline_id:
-          id: << pipeline.id >> 
+      - run:
+          name: "print output file"
+          command: |
+            echo cat output.txt
+      - run:
+          name: "failed to print"
+          command: echo "Failed To Print"
+          when: on_fail
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  # Name the workflow "test-reusable-command"
-  test-reusable-command:
+  test-file-sharing:
     jobs:
-      - print_id
+      - print_output
